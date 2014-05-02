@@ -1,5 +1,9 @@
 // Keep everything in anonymous function, called on window load.
- var colors = []; 
+var colors = []; 
+var pages = new Array("./pages/coverpage.png", "./pages/page1.png", "./pages/page2.png");
+var page_index = 0;
+var currentpage = pages[page_index]; 
+
 if(window.addEventListener) {
 window.addEventListener('load', function () {
   var canvas, context, canvaso, contexto;
@@ -46,7 +50,14 @@ window.addEventListener('load', function () {
 	imageObj.onload = function() {
         context.drawImage(imageObj, 0, 0);
       };
-      imageObj.src = './coverpage.png';
+      imageObj.src = currentpage;
+	
+	// attach event handlers to the prev and next buttons
+	var prev_button = document.getElementById('prevbutton');
+	var next_button = document.getElementById('nextbutton');
+	prev_button.addEventListener('click', ev_prevpage, false); 
+	next_button.addEventListener('click', ev_nextpage, false);	
+	  
 	// Get the color
     var color_select = document.getElementById('dcolor');
     if (!color_select) {
@@ -103,13 +114,37 @@ window.addEventListener('load', function () {
 	
   }
 
-  // The event handler for the size changer
-  function ev_reset (ev) {
+  function load_current_page(){
 	var imageObj = new Image();
 	imageObj.onload = function() {
         context.drawImage(imageObj, 0, 0);
       };
-      imageObj.src = './coverpage.png';	
+      imageObj.src = currentpage;  
+  }
+  
+  // The event handler for the nextpage button
+  function ev_nextpage (ev) {
+  console.log(pages.length);
+  console.log(page_index);
+	if (page_index < (pages.length - 1)){
+		page_index = page_index + 1;
+		currentpage = pages[page_index]; 
+	}
+	load_current_page();	
+  }   
+  
+  // The event handler for the prevpage button
+  function ev_prevpage (ev) {
+	if (page_index > 0){
+		page_index = page_index - 1;
+		currentpage = pages[page_index]; 
+	}
+	load_current_page();	
+  }     
+  
+  // The event handler for the size changer
+  function ev_reset (ev) {
+	load_current_page();
   }    
   
   // The event handler for the size changer
