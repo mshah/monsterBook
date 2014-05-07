@@ -1,16 +1,46 @@
 <html>
     <style type="text/css">
-        body {
-            background-color: ivory;
-        }
-        canvas {
-            border:1px solid red;
-            background-color: blue;
-        }</style>
-<canvas id="canvas" width=300 height=300></canvas>
-</br>
-<button id="pen">Pen</button>
-<button id="eraser">Eraser</button>
+html, body {
+	width: 100%;
+	height: 100%;
+}
+
+body {
+	background: url(http://cssdeck.com/uploads/media/items/1/1SEcq61.png);
+}
+
+#sketch {
+	border: 10px solid gray;
+	height: 100%;
+	position: relative;
+}
+
+#tmp_canvas {
+	position: absolute;
+	left: 0px; right: 0;
+	bottom: 0; top: 0;
+	cursor: crosshair;
+}
+
+form {
+	padding: 10px; margin: 10px;
+	background: whiteSmoke;
+}</style>
+<form>
+	<div>
+		<label for="pencil">Pencil</label>
+		<input id="pencil" type="radio" name="tool" value="pencil" checked>
+	</div>
+	
+	<div>
+		<label for="eraser">Eraser</label>
+		<input id="eraser" type="radio" name="tool" value="eraser">
+	</div>
+</form>
+
+<div id="sketch">
+	<canvas id="paint"></canvas>
+</div>
    <script type="text/javascript" src="javascript_eraser.js"></script>
    
  </html>

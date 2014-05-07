@@ -88,6 +88,7 @@ window.addEventListener('load', function () {
 
     // Activate the default tool.
     tool = new tools['pencil']();
+	tool = new tools['pencil']();
 	
     // Attach the mousedown, mousemove and mouseup event listeners.
     canvas.addEventListener('mousedown', ev_canvas, false);
@@ -214,7 +215,6 @@ window.addEventListener('load', function () {
   tools.pencil = function () {
     var tool = this;
     this.started = false;
-	this.eraser = false;
     // This is called when you start holding down the mouse button.
     // This starts the pencil drawing.
     this.mousedown = function (ev) {
@@ -242,6 +242,42 @@ window.addEventListener('load', function () {
       }
     };
   };
+  
+  // The eraser.
+  tools.eraser = function () {
+    var tool = this;
+    this.started = false;
+    // This is called when you start holding down the mouse button.
+    // This starts the pencil drawing.
+    this.mousedown = function (ev) {
+        context.beginPath();
+        context.moveTo(ev._x, ev._y);
+        tool.started = true;
+    };
+
+    // This function is called every time you move the mouse. Obviously, it only 
+    // draws if the tool.started state is set to true (when you are holding down 
+    // the mouse button).
+    this.mousemove = function (ev) {
+      if (tool.started) {
+        context.globalCompositeOperation = "destination-out";
+		context.globalCompositeOperation = 'destination-out';
+		context.fillStyle = 'rgba(0,0,0,1)';
+		context.strokeStyle = 'rgba(0,0,0,1)';		
+        context.arc(ev._x, ev._y, 5, 0, Math.PI * 2, false);
+        context.fill();
+      }
+    };
+
+    // This is called when you release the mouse button.
+    this.mouseup = function (ev) {
+      if (tool.started) {
+        tool.mousemove(ev);
+        tool.started = false;
+        img_update();
+      }
+    };
+  };  
 
   init();
 
