@@ -1,6 +1,6 @@
 // Keep everything in anonymous function, called on window load.
 var colors = []; 
-var pages = new Array("./pages/coverpage.png", "./pages/page1.png", "./pages/page2.png");
+var pages = new Array("./pages/coverpage.png", "./pages/page1.png", "./pages/page2.png", "./pages/page3.png", "./pages/page4.png", "./pages/page5.png", "./pages/page6.png");
 var page_index = 0;
 var currentpage = pages[page_index]; 
 
@@ -155,12 +155,16 @@ window.addEventListener('load', function () {
   // The event handler for the eraser
   function ev_eraser (ev) {
 	var eraser = document.getElementById('eraser_img');
-	eraser.src = "./images/eraser_on.png";	  
+	eraser.src = "./images/eraser_on.png";
+	this.eraser = true;	
 	colors.color11();
+	//context.globalCompositeOperation = 'destination-out';
+	//context.clearRect(0, 0, canvas.width, canvas.height);
   } 
 
   // The event handler for the brush
   function ev_brush(ev) {
+	this.eraser = false;
 	var sel_color = document.getElementById('dcolor').value;
 	console.log(sel_color);
 	color = new colors[sel_color]();
@@ -210,7 +214,7 @@ window.addEventListener('load', function () {
   tools.pencil = function () {
     var tool = this;
     this.started = false;
-
+	this.eraser = false;
     // This is called when you start holding down the mouse button.
     // This starts the pencil drawing.
     this.mousedown = function (ev) {
@@ -224,7 +228,7 @@ window.addEventListener('load', function () {
     // the mouse button).
     this.mousemove = function (ev) {
       if (tool.started) {
-        context.lineTo(ev._x, ev._y);
+        context.lineTo(ev._x, ev._y);		
         context.stroke();
       }
     };
