@@ -10,7 +10,7 @@ window.addEventListener('load', function () {
 
   // The active tool instance.
   var tool;
-
+	var tool = 'pencil';
   function init () {
     // Find the canvas element.
     canvaso = document.getElementById('imageView');
@@ -88,7 +88,6 @@ window.addEventListener('load', function () {
 
     // Activate the default tool.
     tool = new tools['pencil']();
-	tool = new tools['pencil']();
 	
     // Attach the mousedown, mousemove and mouseup event listeners.
     canvas.addEventListener('mousedown', ev_canvas, false);
