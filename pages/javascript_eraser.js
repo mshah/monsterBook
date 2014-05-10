@@ -5,7 +5,7 @@ var currentpage = pages[page_index];
 
 paintbrushes = new Array("./images/paintbrush_000000.png", "./images/paintbrush_7F7F7F.png", "./images/paintbrush_880015.png", "./images/paintbrush_DF013A.png", "./images/paintbrush_FF4000.png", "./images/paintbrush_FFFF00.png", "./images/paintbrush_04B431.png", "./images/paintbrush_0000FF.png", "./images/paintbrush_5F04B4.png", "./images/paintbrush_8904B1.png", "./images/paintbrush_FFFFFF.png", "./images/paintbrush_C3C3C3.png", "./images/paintbrush_B45F04.png", "./images/paintbrush_F781BE.png", "./images/paintbrush_FF8000.png", "./images/paintbrush_BFFF00.png", "./images/paintbrush_04B486.png", "./images/paintbrush_2ECCFA.png", "./images/paintbrush_DF01D7.png", "./images/paintbrush_FF00BF.png");  
 function color_change(index){
-	var colorEle = document.getElementById('dcolor');
+	var colorEle = document.getElementById('color');
 	console.log(colorEle);
 	colorEle.selectedIndex  = index;
 	// update the way the icons look
@@ -15,9 +15,10 @@ function color_change(index){
 	eraser.src = "./images/eraser.png";		
 	document.getElementById('brush').click();
 	
-		if (colors[this.value]) {
-		  color = new colors[this.value]();
-		}	
+	if (colors[this.value]) {
+		color = new colors[this.value]();
+	}
+	colorEle.change();
 }
 
 (function() {
@@ -35,13 +36,6 @@ function color_change(index){
 	var sketch_style = getComputedStyle(sketch);
 	canvas.width = parseInt(sketch_style.getPropertyValue('width'));
 	canvas.height = parseInt(sketch_style.getPropertyValue('height'));
-	
-	
-	// draw image
-	var img = new Image();
-	img.src = './pages/coverpage.png';
-	ctx.drawImage(imageObj, 0, 0);
-
 	
 	// Determine Tool
 	var tool = 'pencil';
@@ -81,23 +75,19 @@ function color_change(index){
 	next_button.addEventListener('click', ev_nextpage, false);	
 	  
 	// Get the color
-    var color_select = document.getElementById('dcolor');
+    var color_select = document.getElementById('color');
     if (!color_select) {
       alert('Error: failed to get the dcolor element!');
       return;
     }
     color_select.addEventListener('change', ev_color_change, false);
 
-	// attach event handler to size
-    var size_select = document.getElementById('size');
-    if (!size_select) {
-      alert('Error: failed to get the size element!');
-      return;
-    }
-    size_select.addEventListener('change', ev_size_change, false);	
-	//default size to 8
-	tmp_ctx.lineWidth= 8;
-	
+	document.querySelector('#size').onclick = function() {
+		console.log("event handler for size changer");
+		ctx.lineWidth=this.value;
+		tmp_ctx.lineWidth=this.value;
+	};
+
 	var reset = document.getElementById('reset');
     reset.addEventListener('click', ev_reset, false);	
 	
@@ -214,9 +204,11 @@ function color_change(index){
 	}
 
   function load_current_page(){
+  var property = "url('" + currentpage + ")";
+  sketch.style.background =  property;
 	var imageObj = new Image();
 	imageObj.onload = function() {
-        context.drawImage(imageObj, 0, 0);
+		ctx.drawImage(imageObj, 0, 0);
       };
       imageObj.src = currentpage;  
   }
@@ -225,6 +217,7 @@ function color_change(index){
   function ev_nextpage (ev) {
   console.log(pages.length);
   console.log(page_index);
+  console.log("event nextPage");
 	if (page_index < (pages.length - 1)){
 		page_index = page_index + 1;
 		currentpage = pages[page_index]; 
@@ -234,6 +227,7 @@ function color_change(index){
   
   // The event handler for the prevpage button
   function ev_prevpage (ev) {
+  console.log("event prevPage");
 	if (page_index > 0){
 		page_index = page_index - 1;
 		currentpage = pages[page_index]; 
@@ -243,14 +237,9 @@ function color_change(index){
   
   // The event handler for the size changer
   function ev_reset (ev) {
+  console.log("event handler for reset");
 	load_current_page();
   }    
-  
-  // The event handler for the size changer
-  function ev_size_change (ev) {
-	context.lineWidth=this.value;
-  } 	
- 	
 	
 	var onErase = function() {
 		
@@ -260,7 +249,7 @@ function color_change(index){
 		ctx.globalCompositeOperation = 'destination-out';
 		ctx.fillStyle = 'rgba(0,0,0,1)';
 		ctx.strokeStyle = 'rgba(0,0,0,1)';
-		ctx.lineWidth = 5;
+		//ctx.lineWidth = 16;
 		
 		if (ppts.length < 3) {
 			var b = ppts[0];
@@ -270,7 +259,6 @@ function color_change(index){
 			ctx.arc(b.x, b.y, ctx.lineWidth / 2, 0, Math.PI * 2, !0);
 			ctx.fill();
 			ctx.closePath();
-			
 			return;
 		}
 		
@@ -318,43 +306,5 @@ function color_change(index){
   colors.color18 = function () {tmp_ctx.strokeStyle="#2ECCFA";}  
   colors.color19 = function () {tmp_ctx.strokeStyle="#DF01D7";}  
   colors.color20 = function () {tmp_ctx.strokeStyle="#FF00BF";}
-
-  function load_current_page(){
-	var imageObj = new Image();
-	imageObj.onload = function() {
-        tmp_ctx.drawImage(imageObj, 0, 0);
-      };
-      imageObj.src = currentpage;  
-  }
-  
-  // The event handler for the nextpage button
-  function ev_nextpage (ev) {
-  console.log(pages.length);
-  console.log(page_index);
-	if (page_index < (pages.length - 1)){
-		page_index = page_index + 1;
-		currentpage = pages[page_index]; 
-	}
-	load_current_page();	
-  }   
-  
-  // The event handler for the prevpage button
-  function ev_prevpage (ev) {
-	if (page_index > 0){
-		page_index = page_index - 1;
-		currentpage = pages[page_index]; 
-	}
-	load_current_page();	
-  }     
-  
-  // The event handler for the size changer
-  function ev_reset (ev) {
-	load_current_page();
-  }    
-  
-  // The event handler for the size changer
-  function ev_size_change (ev) {
-	tmp_ctx.lineWidth=this.value;
-  }  
   
 }());
