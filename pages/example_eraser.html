@@ -1,7 +1,7 @@
 <html>
     <style type="text/css">
 #sketch {
-	background: url("./pages/coverpage.png");
+
 	background-repeat: no-repeat;
 	border: 2px solid gray;
 	height: 100%;
@@ -41,7 +41,7 @@
 						  <td><button id="brush"><img id="colorbrush" height="70px" width="70px" src="./images/paintbrush_000000.png"/></button>
 						  </td>
 												  
-							<td height="80" onclick="color_change(0)" bgcolor=#000000 /><td height="80"  onclick="color_change(1)" bgcolor=#7F7F7F />
+							<td height="80" onclick="color_change(0)" bgcolor=#000000 /><td id="color1" height="80" bgcolor=#7F7F7F />
 							<td height="80"  onclick="color_change(2)" bgcolor=#880015 /><td height="80"  onclick="color_change(3)" bgcolor=#DF013A />
 							<td height="80"  onclick="color_change(4)" bgcolor=#FF4000 /><td height="80"  onclick="color_change(5)" bgcolor=#FFFF00 />
 							<td height="80"  onclick="color_change(6)" bgcolor=#04B431 /><td height="80"  onclick="color_change(7)" bgcolor=#0000FF />
@@ -108,6 +108,7 @@
 		  </canvas>	
 		
     </div>  
+	<script type="text/javascript" src="jquery-2.1.1.min.js"></script>
     <script type="text/javascript" src="javascript_eraser.js"></script>
   </body>
 </html>
