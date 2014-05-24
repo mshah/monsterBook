@@ -135,37 +135,48 @@ function color_change(index){
 	}, false);
 	
 	var floodfill = function(curX, curY, origX, origY){
-	var outlineData = outlineLayerData.data;
-	var imageWidth = outlineImage.width;
-	var imageHeight = outlineImage.height;
-		console.log("the pixel Data in floodfill");
+		var imageWidth = outlineImage.width;
+		outlineLayerData = outline.getImageData(0, 0, imageWidth, outlineImage.height);
+		var outlineData = outlineLayerData.data;
+
+		// create an image swatch
+		var swatch = tmp_ctx.createImageData(1, 1);
+		var swatchData = swatch.data;
+		swatchData[0] = tmp_ctx.fillStyle.r;
+		swatchData[1] = tmp_ctx.fillStyle.g;
+		swatchData[2] = tmp_ctx.fillStyle.b;
+		swatchData[3] = tmp_ctx.fillStyle.a;
+		tmp_ctx.putImageData(swatch, curX, curY);
+
+		var tmp_imageData = tmp_ctx.getImageData(0, 0, imageWidth, outlineImage.height);
+		console.log("tmp_imageData");
+		console.log(tmp_imageData);		
         // iterate over all pixels based on x and y coordinates
-		
+		curY = 500;
+		curX = 500;
         for(var y = 0; y < curY; y++) {
-		console.log("y: " + y + " curY: " + curY);
-          // loop through each column
           for(var x = 0; x < curX; x++) {
-		  // todo: fill in the image data with the color i want to fill
             var red = outlineData[((imageWidth * y) + x) * 4];
             var green = outlineData[((imageWidth * y) + x) * 4 + 1];
             var blue = outlineData[((imageWidth * y) + x) * 4 + 2];
             var alpha = outlineData[((imageWidth * y) + x) * 4 + 3];
 		
-			//console.log(" pixel check red " + red + " blue " + blue + " green " + green + " alpha " + alpha);
 			if (red === 255 && green === 255 && blue === 255){
-				tmp_ctx.fillRect(x, y + 1, 1, 1);
+				console.log("skipping black area");
 			//console.log("red " + red + " blue " + blue + " green " + green + " alpha " + alpha);
 			}else{
-			
+				//tmp_imageData.data[((imageWidth * y) + x) * 4] = tmp_ctx.fillStyle.r;
+				//tmp_imageData.data[((imageWidth * y) + x) * 4 + 1] = tmp_ctx.fillStyle.g;
+				//tmp_imageData.data[((imageWidth * y) + x) * 4 + 2] = tmp_ctx.fillStyle.b;
+
+				console.log("calling fillRect on the tmpCtx");
+				
+				tmp_ctx.fillRect( x, y, 1, 1 );
 			}
+
           }
         }
-		/*
-		if(curY < canvas_height){
-			tmp_ctx.fillRect(origX, curY + 1, 2, 2);
-		}else if (curX < canvas_width){
-			tmp_ctx.fillRect(curX + 1, origY, 2, 2);
-		}*/
+
 	};
 	
 	var onPaint = function(startX, startY)  {
@@ -176,8 +187,8 @@ function color_change(index){
 			tmp_ctx.beginPath();
 
 
-			floodfill(b.x, b.y);
-			tmp_ctx.fillRect(b.x, b.y, 20, 20);	
+			floodfill(b.x, b.y, b.x, b.y);
+			//tmp_ctx.fillRect(b.x, b.y, 20, 20);	
 			tmp_ctx.closePath();
 		}else{
 			// Saving all the points in an array
@@ -243,7 +254,7 @@ function color_change(index){
   console.log(outlineImage);	
 
 	outlineImage.onload = function() {
-        outline.drawImage(outlineImage, 0, 0);
+    outline.drawImage(outlineImage, 0, 0);
 		console.log("loading image2" + outlineImage);
 		
 		var imageWidth = outlineImage.width;
@@ -259,7 +270,7 @@ function color_change(index){
           var green = outlineData[i + 1];
           var blue = outlineData[i + 2];
           var alpha = outlineData[i + 3];
-		  console.log("red " + red + " blue " + blue + " green " + green + " alpha " + alpha);
+		  //console.log("red " + red + " blue " + blue + " green " + green + " alpha " + alpha);
         }	
       };
     //imageObj.src = currentpage;  
