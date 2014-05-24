@@ -161,16 +161,9 @@ function color_change(index){
             var blue = outlineData[((imageWidth * y) + x) * 4 + 2];
             var alpha = outlineData[((imageWidth * y) + x) * 4 + 3];
 		
-			if (red === 255 && green === 255 && blue === 255){
-				console.log("skipping black area");
-			//console.log("red " + red + " blue " + blue + " green " + green + " alpha " + alpha);
+			if (red + green + blue < 100){
+				//console.log("skipping black area");
 			}else{
-				//tmp_imageData.data[((imageWidth * y) + x) * 4] = tmp_ctx.fillStyle.r;
-				//tmp_imageData.data[((imageWidth * y) + x) * 4 + 1] = tmp_ctx.fillStyle.g;
-				//tmp_imageData.data[((imageWidth * y) + x) * 4 + 2] = tmp_ctx.fillStyle.b;
-
-				console.log("calling fillRect on the tmpCtx");
-				
 				tmp_ctx.fillRect( x, y, 1, 1 );
 			}
 
