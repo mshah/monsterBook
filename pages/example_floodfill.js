@@ -1,6 +1,8 @@
 var colors = []; 
 var pages = new Array("url('./pages/coverpage.png')", "url('./pages/page1.png')", "url('./pages/page2.png')", "url('./pages/page3.png')", "url('./pages/page4.png')", "url('./pages/page5.png')", "url('./pages/page6.png')");
 var page_index = 0;
+var canvas_width = 1110;
+var canvas_height = 600;
 var currentpage = pages[page_index]; 
 paintbrushes = new Array("./images/paintbrush_000000.png", "./images/paintbrush_7F7F7F.png", "./images/paintbrush_880015.png", "./images/paintbrush_DF013A.png", "./images/paintbrush_FF4000.png", "./images/paintbrush_FFFF00.png", "./images/paintbrush_04B431.png", "./images/paintbrush_0000FF.png", "./images/paintbrush_5F04B4.png", "./images/paintbrush_8904B1.png", "./images/paintbrush_FFFFFF.png", "./images/paintbrush_C3C3C3.png", "./images/paintbrush_B45F04.png", "./images/paintbrush_F781BE.png", "./images/paintbrush_FF8000.png", "./images/paintbrush_BFFF00.png", "./images/paintbrush_04B486.png", "./images/paintbrush_2ECCFA.png", "./images/paintbrush_DF01D7.png", "./images/paintbrush_FF00BF.png");  
 paintbuckets = new Array("./images/paintbucket_000000.png", "./images/paintbucket_7F7F7F.png", "./images/paintbucket_880015.png", "./images/paintbucket_DF013A.png", "./images/paintbucket_FF4000.png", "./images/paintbucket_FFFF00.png", "./images/paintbucket_04B431.png", "./images/paintbucket_0000FF.png", "./images/paintbucket_5F04B4.png", "./images/paintbucket_8904B1.png", "./images/paintbucket_FFFFFF.png", "./images/paintbucket_C3C3C3.png", "./images/paintbucket_B45F04.png", "./images/paintbucket_F781BE.png", "./images/paintbucket_FF8000.png", "./images/paintbucket_BFFF00.png", "./images/paintbucket_04B486.png", "./images/paintbucket_2ECCFA.png", "./images/paintbucket_DF01D7.png", "./images/paintbucket_FF00BF.png");  
@@ -33,11 +35,17 @@ function color_change(index){
 	var sketch = document.querySelector('#sketch');
 	var sketch_style = getComputedStyle(sketch);
 	var tmp_canvas = document.createElement('canvas');
-	tmp_ctx = tmp_canvas.getContext('2d');	
-	load_current_page();
-	
+	tmp_ctx = tmp_canvas.getContext('2d');
+	var outlineCanvas = document.createElement('canvas');
+	var outline = outlineCanvas.getContext('2d');
 	// for the flood tool
-	var colorLayerData;
+	var outlineLayerData;
+	var outlineData;
+	var outlineImage;
+	load_current_page();
+	draw_outline();
+
+	
 	
 	// Determine Tool
 	var tool = 'pencil';
@@ -94,10 +102,12 @@ function color_change(index){
 	
 	/* Drawing on Paint App */
 	tmp_ctx.lineWidth = 8;
+	ctx.lineWidth = 8;
 	tmp_ctx.lineJoin = 'round';
 	tmp_ctx.lineCap = 'round';
 	tmp_ctx.strokeStyle = 'black';
 	tmp_ctx.fillStyle = 'black';
+	document.getElementById('size').selectedIndex = 2; 
 	
 	tmp_canvas.addEventListener('mousedown', function(e) {
 		tmp_canvas.addEventListener('mousemove', onPaint, false);
@@ -124,143 +134,51 @@ function color_change(index){
 		ppts = [];
 	}, false);
 	
-	var floodFill = function (startX, startY, startR, startG, startB) {
-
-			var newPos,
-				x,
-				y,
-				pixelPos,
-				reachLeft,
-				reachRight,
-				drawingBoundLeft = drawingAreaX,
-				drawingBoundTop = drawingAreaY,
-				drawingBoundRight = drawingAreaX + drawingAreaWidth - 1,
-				drawingBoundBottom = drawingAreaY + drawingAreaHeight - 1,
-				pixelStack = [[startX, startY]];
-
-			while (pixelStack.length) {
-
-				newPos = pixelStack.pop();
-				x = newPos[0];
-				y = newPos[1];
-
-				// Get current pixel position
-				pixelPos = (y * canvasWidth + x) * 4;
-
-				// Go up as long as the color matches and are inside the canvas
-				while (y >= drawingBoundTop && matchStartColor(pixelPos, startR, startG, startB)) {
-					y -= 1;
-					pixelPos -= canvasWidth * 4;
-				}
-
-				pixelPos += canvasWidth * 4;
-				y += 1;
-				reachLeft = false;
-				reachRight = false;
-
-				// Go down as long as the color matches and in inside the canvas
-				while (y <= drawingBoundBottom && matchStartColor(pixelPos, startR, startG, startB)) {
-					y += 1;
-
-					colorPixel(pixelPos, curColor.r, curColor.g, curColor.b);
-
-					if (x > drawingBoundLeft) {
-						if (matchStartColor(pixelPos - 4, startR, startG, startB)) {
-							if (!reachLeft) {
-								// Add pixel to stack
-								pixelStack.push([x - 1, y]);
-								reachLeft = true;
-							}
-						} else if (reachLeft) {
-							reachLeft = false;
-						}
-					}
-
-					if (x < drawingBoundRight) {
-						if (matchStartColor(pixelPos + 4, startR, startG, startB)) {
-							if (!reachRight) {
-								// Add pixel to stack
-								pixelStack.push([x + 1, y]);
-								reachRight = true;
-							}
-						} else if (reachRight) {
-							reachRight = false;
-						}
-					}
-
-					pixelPos += canvasWidth * 4;
-				}
+	var floodfill = function(curX, curY, origX, origY){
+	var outlineData = outlineLayerData.data;
+	var imageWidth = outlineImage.width;
+	var imageHeight = outlineImage.height;
+		console.log("the pixel Data in floodfill");
+        // iterate over all pixels based on x and y coordinates
+		
+        for(var y = 0; y < curY; y++) {
+		console.log("y: " + y + " curY: " + curY);
+          // loop through each column
+          for(var x = 0; x < curX; x++) {
+		  // todo: fill in the image data with the color i want to fill
+            var red = outlineData[((imageWidth * y) + x) * 4];
+            var green = outlineData[((imageWidth * y) + x) * 4 + 1];
+            var blue = outlineData[((imageWidth * y) + x) * 4 + 2];
+            var alpha = outlineData[((imageWidth * y) + x) * 4 + 3];
+		
+			//console.log(" pixel check red " + red + " blue " + blue + " green " + green + " alpha " + alpha);
+			if (red === 255 && green === 255 && blue === 255){
+				tmp_ctx.fillRect(x, y + 1, 1, 1);
+			//console.log("red " + red + " blue " + blue + " green " + green + " alpha " + alpha);
+			}else{
+			
 			}
+          }
+        }
+		/*
+		if(curY < canvas_height){
+			tmp_ctx.fillRect(origX, curY + 1, 2, 2);
+		}else if (curX < canvas_width){
+			tmp_ctx.fillRect(curX + 1, origY, 2, 2);
+		}*/
 	};
-
-	var colorPixel = function (pixelPos, r, g, b, a) {
-
-			colorLayerData.data[pixelPos] = r;
-			colorLayerData.data[pixelPos + 1] = g;
-			colorLayerData.data[pixelPos + 2] = b;
-			colorLayerData.data[pixelPos + 3] = a !== undefined ? a : 255;
-	};
-	
-	var matchStartColor = function (pixelPos, startR, startG, startB) {
-
-			var r = outlineLayerData.data[pixelPos],
-				g = outlineLayerData.data[pixelPos + 1],
-				b = outlineLayerData.data[pixelPos + 2],
-				a = outlineLayerData.data[pixelPos + 3];
-
-			// If current pixel of the outline image is black
-			if (matchOutlineColor(r, g, b, a)) {
-				return false;
-			}
-
-			r = colorLayerData.data[pixelPos];
-			g = colorLayerData.data[pixelPos + 1];
-			b = colorLayerData.data[pixelPos + 2];
-
-			// If the current pixel matches the clicked color
-			if (r === startR && g === startG && b === startB) {
-				return true;
-			}
-
-			// If current pixel matches the new color
-			if (r === curColor.r && g === curColor.g && b === curColor.b) {
-				return false;
-			}
-
-			return true;
-		},
-
-		colorPixel = function (pixelPos, r, g, b, a) {
-
-			colorLayerData.data[pixelPos] = r;
-			colorLayerData.data[pixelPos + 1] = g;
-			colorLayerData.data[pixelPos + 2] = b;
-			colorLayerData.data[pixelPos + 3] = a !== undefined ? a : 255;
-		};	
 	
 	var onPaint = function(startX, startY)  {
 		if (tool == 'bucket'){
-			tmp_ctx.putImageData(colorLayerData, 0, 0);
-			console.log("calling bucket tool");
-			var pixelPos = (startY * tmp_canvas.width + startX) * 4,
-				r = colorLayerData.data[pixelPos],
-				g = colorLayerData.data[pixelPos + 1],
-				b = colorLayerData.data[pixelPos + 2],
-				a = colorLayerData.data[pixelPos + 3];
+			// Saving all the points in an array
+			ppts.push({x: mouse.x, y: mouse.y});
+			var b = ppts[0];
+			tmp_ctx.beginPath();
 
-			if (r === curColor.r && g === curColor.g && b === curColor.b) {
-				// Return because trying to fill with the same color
-				return;
-			}
 
-			if (matchOutlineColor(r, g, b, a)) {
-				// Return because clicked outline
-				return;
-			}
-
-			floodFill(startX, startY, r, g, b);
-
-			//redraw();
+			floodfill(b.x, b.y);
+			tmp_ctx.fillRect(b.x, b.y, 20, 20);	
+			tmp_ctx.closePath();
 		}else{
 			// Saving all the points in an array
 			ppts.push({x: mouse.x, y: mouse.y});
@@ -319,6 +237,35 @@ function color_change(index){
 		ppts = [];
 	}, false);	
 
+  function draw_outline(){
+  outlineImage = new Image(currentpage);
+  outlineImage.src = "./pages/coverpage.png";  
+  console.log(outlineImage);	
+
+	outlineImage.onload = function() {
+        outline.drawImage(outlineImage, 0, 0);
+		console.log("loading image2" + outlineImage);
+		
+		var imageWidth = outlineImage.width;
+		outlineLayerData = outline.getImageData(0, 0, imageWidth, outlineImage.height);
+		var outlineData = outlineLayerData.data;
+		//var n = outlineData.length;
+		var n = 40;
+		console.log(n);
+	
+        // iterate over all pixels
+        for(var i = 0; i < n; i += 4) {
+          var red = outlineData[i];
+          var green = outlineData[i + 1];
+          var blue = outlineData[i + 2];
+          var alpha = outlineData[i + 3];
+		  console.log("red " + red + " blue " + blue + " green " + green + " alpha " + alpha);
+        }	
+      };
+    //imageObj.src = currentpage;  
+	//outlineImage.src = "./pages/color-swatch-green.png";
+  }
+	
   function load_current_page(){
 	canvas.width = parseInt(sketch_style.getPropertyValue('width'));
 	canvas.height = parseInt(sketch_style.getPropertyValue('height'));
@@ -359,14 +306,14 @@ function color_change(index){
   }    
 	
 	var onErase = function() {
-		
+		var eraser = document.getElementById('eraser_img');
+		eraser.src = "./images/eraser_on.png";		
 		// Saving all the points in an array
 		ppts.push({x: mouse.x, y: mouse.y});
 		
 		ctx.globalCompositeOperation = 'destination-out';
 		ctx.fillStyle = 'rgba(0,0,0,1)';
 		ctx.strokeStyle = 'rgba(0,0,0,1)';
-		//ctx.lineWidth = 16;
 		
 		if (ppts.length < 3) {
 			var b = ppts[0];

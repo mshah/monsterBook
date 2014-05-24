@@ -1,0 +1,115 @@
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+</head>
+<body>
+
+    <canvas id="canvas"></canvas>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script>
+
+        (function () {
+            var lastTime = 0;
+            var vendors = ['ms', 'moz', 'webkit', 'o'];
+            for (var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+                window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
+                window.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame']
+                                           || window[vendors[x] + 'CancelRequestAnimationFrame'];
+            }
+
+            if (!window.requestAnimationFrame)
+                window.requestAnimationFrame = function (callback, element) {
+                    var currTime = new Date().getTime();
+                    var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+                    var id = window.setTimeout(function () { callback(currTime + timeToCall); },
+                      timeToCall);
+                    lastTime = currTime + timeToCall;
+                    return id;
+                };
+
+            if (!window.cancelAnimationFrame)
+                window.cancelAnimationFrame = function (id) {
+                    clearTimeout(id);
+                };
+        }());
+
+        (function () {
+            var canvas, context = null;
+
+            var fill = function(x, y) {
+                var image = context.getImageData(x, y, 1, 1);
+                var original = image.data;                
+                var inverse = [255 - original[0], 255 - original[1], 255 - original[2], original[3]];
+
+                var queue = [];
+                queue.push({ "x": x, "y": y });
+
+                var workThunk = function() {
+                    var counter = 0;
+                    while(queue.length && counter < 30) {
+                        workOnPixel();
+                        counter++;
+                    }
+                    if (queue.length) {
+                        requestAnimationFrame(workThunk);
+                    }
+                };
+
+                var workOnPixel = function() {
+                    var point = queue.pop();
+                    image = context.getImageData(point.x, point.y, 1, 1);
+                    var pixel = image.data;
+                    
+                    if (pixel[0] == original[0] &&
+                        pixel[1] == original[1] &&
+                        pixel[2] == original[2] &&
+                        pixel[3] == original[3]) {
+
+                        pixel[0] = inverse[0];
+                        pixel[1] = inverse[1];
+                        pixel[2] = inverse[2];
+                        pixel[3] = inverse[3];
+                        context.putImageData(image, point.x, point.y);
+                        
+                        if (point.x > 0) {
+                            queue.push({ "x": point.x - 1, "y": point.y });
+                        }
+                        if (point.y > 0) {
+                            queue.push({ "x": point.x, "y": point.y - 1 });
+                        }
+                        if (point.x < canvas.width) {
+                            queue.push({ "x": point.x + 1, "y": point.y });
+                        }
+                        if (point.y < canvas.height) {
+                            queue.push({ "x": point.x, "y": point.y + 1 });
+                        }
+                    }                                       
+                };
+                
+                requestAnimationFrame(workThunk);                
+            };
+
+            $(function () {
+                canvas = document.getElementById("canvas");
+                context = canvas.getContext("2d");
+                $("#canvas").click(function(event) {
+                    fill(event.offsetX, event.offsetY);
+                });
+                
+                var img = new Image();
+                img.onload = function () {
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    context.drawImage(this,0,0);
+                };
+                img.src = "thermometer_01.png";                
+            });
+
+        }());
+    </script>
+
+</body>
+</html>
