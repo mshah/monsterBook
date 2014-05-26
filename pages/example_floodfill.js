@@ -30,8 +30,7 @@ function color_change(index){
 
 (function() {
 	console.log("Current version: " + version);
-	//var canvas = document.querySelector('#paint');
-	//var ctx = canvas.getContext('2d');
+
 	var canvas = document.querySelector('#paint');
 	var ctx = canvas.getContext('2d');  
 	var sketch = document.querySelector('#sketch');
@@ -132,26 +131,9 @@ function color_change(index){
 	}, false);
 	
 	var floodfill = function(curX, curY){
-	  outlineImage = new Image(currentpage);
-	  outlineImage.src = currentpageSource;  
-	  console.log(outlineImage);	
-
-    outline.drawImage(outlineImage, 0, 0);
-		console.log("loading outlineImage.onLoad in floodfill" + outlineImage);
-		
-		outlineData = outlineLayerData.data;
 		var n = outlineData.length;
 		console.log(n);
 		// 2664000 is the length
-		// iterate over all pixels
-		/*
-		for(var i = 1610; i < 2000; i += 4) {
-		  var red = outlineData[i];
-		  var green = outlineData[i + 1];
-		  var blue = outlineData[i + 2];
-		  var alpha = outlineData[i + 3];
-		 	console.log("red " + red + " blue " + blue + " green " + green + " alpha " + alpha);
-		}	*/
 
 		console.log("outlineImage: ");
 		console.log(outlineImage);
