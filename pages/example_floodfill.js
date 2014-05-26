@@ -1,14 +1,16 @@
 var colors = []; 
 var pages = new Array("url('./pages/coverpage.png')", "url('./pages/page1.png')", "url('./pages/page2.png')", "url('./pages/page3.png')", "url('./pages/page4.png')", "url('./pages/page5.png')", "url('./pages/page6.png')");
+var pageSources = new Array("./pages/coverpage.png", "pages/page1.png", "./pages/page2.png", "./pages/page3.png", "./pages/page4.png", "./pages/page5.png", "./pages/page6.png");
 var page_index = 0;
 var canvas_width = 1110;
 var canvas_height = 600;
 var currentpage = pages[page_index]; 
+var currentpageSource = pageSources[page_index]; 
 paintbrushes = new Array("./images/paintbrush_000000.png", "./images/paintbrush_7F7F7F.png", "./images/paintbrush_880015.png", "./images/paintbrush_DF013A.png", "./images/paintbrush_FF4000.png", "./images/paintbrush_FFFF00.png", "./images/paintbrush_04B431.png", "./images/paintbrush_0000FF.png", "./images/paintbrush_5F04B4.png", "./images/paintbrush_8904B1.png", "./images/paintbrush_FFFFFF.png", "./images/paintbrush_C3C3C3.png", "./images/paintbrush_B45F04.png", "./images/paintbrush_F781BE.png", "./images/paintbrush_FF8000.png", "./images/paintbrush_BFFF00.png", "./images/paintbrush_04B486.png", "./images/paintbrush_2ECCFA.png", "./images/paintbrush_DF01D7.png", "./images/paintbrush_FF00BF.png");  
 paintbuckets = new Array("./images/paintbucket_000000.png", "./images/paintbucket_7F7F7F.png", "./images/paintbucket_880015.png", "./images/paintbucket_DF013A.png", "./images/paintbucket_FF4000.png", "./images/paintbucket_FFFF00.png", "./images/paintbucket_04B431.png", "./images/paintbucket_0000FF.png", "./images/paintbucket_5F04B4.png", "./images/paintbucket_8904B1.png", "./images/paintbucket_FFFFFF.png", "./images/paintbucket_C3C3C3.png", "./images/paintbucket_B45F04.png", "./images/paintbucket_F781BE.png", "./images/paintbucket_FF8000.png", "./images/paintbucket_BFFF00.png", "./images/paintbucket_04B486.png", "./images/paintbucket_2ECCFA.png", "./images/paintbucket_DF01D7.png", "./images/paintbucket_FF00BF.png");  
 paintcolors = new Array("#000000", "#7F7F7F", "#880015", "#DF013A", "#FF4000", "#FFFF00", "#04B431", "#0000FF", "#5F04B4", "#8904B1", "#FFFFFF", "#C3C3C3", "#B45F04", "#F781BE", "#FF8000", "#BFFF00", "#04B486", "#2ECCFA", "#DF01D7", "#FF00BF"); 
 
-
+var version = "1.0.0.0.1";
 // variable for context
 var tmp_ctx;
 
@@ -27,7 +29,7 @@ function color_change(index){
 }
 
 (function() {
-	
+	console.log("Current version: " + version);
 	//var canvas = document.querySelector('#paint');
 	//var ctx = canvas.getContext('2d');
 	var canvas = document.querySelector('#paint');
@@ -39,13 +41,8 @@ function color_change(index){
 	var outlineCanvas = document.createElement('canvas');
 	var outline = outlineCanvas.getContext('2d');
 	// for the flood tool
-	var outlineLayerData;
-	var outlineData;
-	var outlineImage;
+	var outlineLayerData, outlineData, outlineImage;
 	load_current_page();
-	draw_outline();
-
-	
 	
 	// Determine Tool
 	var tool = 'pencil';
@@ -134,10 +131,42 @@ function color_change(index){
 		ppts = [];
 	}, false);
 	
-	var floodfill = function(curX, curY, origX, origY){
+	var floodfill = function(curX, curY){
+	  outlineImage = new Image(currentpage);
+	  outlineImage.src = currentpageSource;  
+	  console.log(outlineImage);	
+
+    outline.drawImage(outlineImage, 0, 0);
+		console.log("loading outlineImage.onLoad in floodfill" + outlineImage);
+		
+		outlineData = outlineLayerData.data;
+		var n = outlineData.length;
+		console.log(n);
+		// 2664000 is the length
+		// iterate over all pixels
+		/*
+		for(var i = 1610; i < 2000; i += 4) {
+		  var red = outlineData[i];
+		  var green = outlineData[i + 1];
+		  var blue = outlineData[i + 2];
+		  var alpha = outlineData[i + 3];
+		 	console.log("red " + red + " blue " + blue + " green " + green + " alpha " + alpha);
+		}	*/
+
+		console.log("outlineImage: ");
+		console.log(outlineImage);
+		console.log("outline Context: ");
+		console.log(outline);		
 		var imageWidth = outlineImage.width;
-		outlineLayerData = outline.getImageData(0, 0, imageWidth, outlineImage.height);
-		var outlineData = outlineLayerData.data;
+		var imageHeight = outlineImage.height;
+		var pixelPos = (curY * imageWidth + curX) * 4;
+		console.log("pixel pos is: " + pixelPos);
+		var r = outlineData[pixelPos],
+							g = outlineData[pixelPos + 1],
+							b = outlineData[pixelPos + 2],
+							a = outlineData[pixelPos + 3];     	
+    console.log("outline eval X: " + curX + " Y: " + curY + 
+      		" is r: " + r + " g: " + g + " b: " + b);	
 
 		// create an image swatch
 		var swatch = tmp_ctx.createImageData(1, 1);
@@ -148,28 +177,40 @@ function color_change(index){
 		swatchData[3] = tmp_ctx.fillStyle.a;
 		tmp_ctx.putImageData(swatch, curX, curY);
 
-		var tmp_imageData = tmp_ctx.getImageData(0, 0, imageWidth, outlineImage.height);
-		console.log("tmp_imageData");
-		console.log(tmp_imageData);		
-        // iterate over all pixels based on x and y coordinates
-		curY = 500;
-		curX = 500;
-        for(var y = 0; y < curY; y++) {
-          for(var x = 0; x < curX; x++) {
-            var red = outlineData[((imageWidth * y) + x) * 4];
-            var green = outlineData[((imageWidth * y) + x) * 4 + 1];
-            var blue = outlineData[((imageWidth * y) + x) * 4 + 2];
-            var alpha = outlineData[((imageWidth * y) + x) * 4 + 3];
-		
-			if (red + green + blue < 100){
-				//console.log("skipping black area");
-			}else{
-				tmp_ctx.fillRect( x, y, 1, 1 );
-			}
+		var tmp_imageData = tmp_ctx.getImageData(0, 0, imageWidth, outlineImage.height);	
+		var endX = curX + 20;
+		var endY = curY + 10;
+    // iterate over all pixels based on x and y coordinates
+    /*
+    for(var y = curY; y < endY; y++) {
+      for(var x = curX; x < endX; x++) {
+			 	var pixelPos = (y * imageWidth + x) * 4,
+							r = outlineLayerData.data[pixelPos],
+							g = outlineLayerData.data[pixelPos + 1],
+							b = outlineLayerData.data[pixelPos + 2],
+							a = outlineLayerData.data[pixelPos + 3];     	
 
-          }
-        }
+      	console.log("beginning of outline eval X: " + x + " Y: " + y + 
+      		" is r: " + r + " g: " + g + " b: " + b);				
+				if (r < 20){
+					tmp_ctx.fillRect( x, y, 1, 1 );
+				} else{
+					// break this loop, we're at the end
+					if (x == curX){
+		    		//console.log("y: " + y + " setting y to max");
+						// done, found the outline
+						return;
+					}else{
+						// found outline on right, go to the next line
+						//console.log("x: " + x + " setting x to start");
+						x = imageWidth;
+						break;					
+					}					
+				} 
 
+      }	// for x
+    } // for y
+*/
 	};
 	
 	var onPaint = function(startX, startY)  {
@@ -180,7 +221,7 @@ function color_change(index){
 			tmp_ctx.beginPath();
 
 
-			floodfill(b.x, b.y, b.x, b.y);
+			floodfill(b.x, b.y);
 			//tmp_ctx.fillRect(b.x, b.y, 20, 20);	
 			tmp_ctx.closePath();
 		}else{
@@ -243,7 +284,7 @@ function color_change(index){
 
   function draw_outline(){
   outlineImage = new Image(currentpage);
-  outlineImage.src = "./pages/coverpage.png";  
+  outlineImage.src = currentpageSource;  
   console.log(outlineImage);	
 
 	outlineImage.onload = function() {
@@ -252,61 +293,65 @@ function color_change(index){
 		
 		var imageWidth = outlineImage.width;
 		outlineLayerData = outline.getImageData(0, 0, imageWidth, outlineImage.height);
-		var outlineData = outlineLayerData.data;
-		//var n = outlineData.length;
-		var n = 40;
-		console.log(n);
-	
-        // iterate over all pixels
-        for(var i = 0; i < n; i += 4) {
-          var red = outlineData[i];
-          var green = outlineData[i + 1];
-          var blue = outlineData[i + 2];
-          var alpha = outlineData[i + 3];
-		  //console.log("red " + red + " blue " + blue + " green " + green + " alpha " + alpha);
-        }	
-      };
-    //imageObj.src = currentpage;  
-	//outlineImage.src = "./pages/color-swatch-green.png";
+		outlineData = outlineLayerData.data;
+		 		//var n = outlineData.length;
+				var n = 40;
+		 		console.log(n);
+		 	
+		        // iterate over all pixels
+		         /*for(var i = 0; i < n; i += 4) {
+		           var red = outlineData[i];
+		           var green = outlineData[i + 1];
+		           var blue = outlineData[i + 2];
+		          var alpha = outlineData[i + 3];
+		 		  console.log("red " + red + " blue " + blue + " green " + green + " alpha " + alpha);
+		         }*/
+
+    };
+
   }
 	
   function load_current_page(){
-	canvas.width = parseInt(sketch_style.getPropertyValue('width'));
-	canvas.height = parseInt(sketch_style.getPropertyValue('height'));
-	// Creating a tmp canvas
-	tmp_canvas.id = 'tmp_canvas';
-	tmp_canvas.width = canvas.width;
-	tmp_canvas.height = canvas.height;	
-	sketch.appendChild(tmp_canvas);  
-  
-	var property = "url('" + currentpage + ")";
-	sketch.style.background =  currentpage;
+		canvas.width = parseInt(sketch_style.getPropertyValue('width'));
+		canvas.height = parseInt(sketch_style.getPropertyValue('height'));
+		// Creating a tmp canvas
+		tmp_canvas.id = 'tmp_canvas';
+		tmp_canvas.width = canvas.width;
+		tmp_canvas.height = canvas.height;	
+		sketch.appendChild(tmp_canvas);  
+	  
+		var property = "url('" + currentpage + ")";
+		sketch.style.background =  currentpage;
+
+		draw_outline();
   }
   
   // The event handler for the nextpage button
   function ev_nextpage (ev) {
-  console.log("event nextPage");
-	if (page_index < (pages.length - 1)){
-		page_index = page_index + 1;
-		currentpage = pages[page_index]; 
-	}
-	load_current_page();	
+	  console.log("event nextPage");
+		if (page_index < (pages.length - 1)){
+			page_index = page_index + 1;
+			currentpage = pages[page_index]; 
+			currentpageSource = pageSources[page_index];
+		}
+		load_current_page();	
   }   
   
   // The event handler for the prevpage button
   function ev_prevpage (ev) {
-  console.log("event prevPage");
-	if (page_index > 0){
-		page_index = page_index - 1;
-		currentpage = pages[page_index]; 
-	}
-	load_current_page();	
+	  console.log("event prevPage");
+		if (page_index > 0){
+			page_index = page_index - 1;
+			currentpage = pages[page_index]; 
+			currentpageSource = pageSources[page_index];
+		}
+		load_current_page();	
   }     
   
   // The event handler for the size changer
   function ev_reset (ev) {
-  console.log("event handler for reset");
-	load_current_page();
+	  console.log("event handler for reset");
+		load_current_page();
   }    
 	
 	var onErase = function() {
