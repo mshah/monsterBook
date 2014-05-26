@@ -160,10 +160,12 @@ function color_change(index){
 		tmp_ctx.putImageData(swatch, curX, curY);
 
 		var tmp_imageData = tmp_ctx.getImageData(0, 0, imageWidth, outlineImage.height);	
-		var endX = curX + 20;
-		var endY = curY + 10;
+		var endX = imageWidth;
+		var endY = imageHeight;
     // iterate over all pixels based on x and y coordinates
-    /*
+
+
+    // bucketfill from cursor to bottom right corner
     for(var y = curY; y < endY; y++) {
       for(var x = curX; x < endX; x++) {
 			 	var pixelPos = (y * imageWidth + x) * 4,
@@ -172,27 +174,113 @@ function color_change(index){
 							b = outlineLayerData.data[pixelPos + 2],
 							a = outlineLayerData.data[pixelPos + 3];     	
 
-      	console.log("beginning of outline eval X: " + x + " Y: " + y + 
-      		" is r: " + r + " g: " + g + " b: " + b);				
-				if (r < 20){
+      	//console.log("beginning of outline eval X: " + x + " Y: " + y + 
+      	//	" is r: " + r + " g: " + g + " b: " + b);
+      	// todo: rely only on alpha channel, and create outline only images for each page				
+				if (r + g + b > 0){
 					tmp_ctx.fillRect( x, y, 1, 1 );
 				} else{
 					// break this loop, we're at the end
 					if (x == curX){
-		    		//console.log("y: " + y + " setting y to max");
 						// done, found the outline
-						return;
+						y = endY;
+						break;
 					}else{
 						// found outline on right, go to the next line
-						//console.log("x: " + x + " setting x to start");
-						x = imageWidth;
+						x = endX;
 						break;					
 					}					
 				} 
-
       }	// for x
     } // for y
-*/
+
+    // bucketfill from cursor to top right corner
+    for(var y = curY; y > 0; y--) {
+      for(var x = curX; x < endX; x++) {
+			 	var pixelPos = (y * imageWidth + x) * 4,
+							r = outlineLayerData.data[pixelPos],
+							g = outlineLayerData.data[pixelPos + 1],
+							b = outlineLayerData.data[pixelPos + 2],
+							a = outlineLayerData.data[pixelPos + 3];     	
+
+      	//console.log("beginning of outline eval X: " + x + " Y: " + y + 
+      	//	" is r: " + r + " g: " + g + " b: " + b);
+      	// todo: rely only on alpha channel, and create outline only images for each page				
+				if (r + g + b > 0){
+					tmp_ctx.fillRect( x, y, 1, 1 );
+				} else{
+					// break this loop, we're at the end
+					if (x == curX){
+						// done, found the outline
+						y = 0;
+						break;
+					}else{
+						// found outline on right, go to the next line
+						x = endX;
+						break;					
+					}					
+				} 
+      }	// for x
+    } // for y  
+
+		// bucketfill from cursor to bottom left corner
+    for(var y = curY; y < endY; y++) {
+      for(var x = curX; x > 0; x--) {
+			 	var pixelPos = (y * imageWidth + x) * 4,
+							r = outlineLayerData.data[pixelPos],
+							g = outlineLayerData.data[pixelPos + 1],
+							b = outlineLayerData.data[pixelPos + 2],
+							a = outlineLayerData.data[pixelPos + 3];     	
+
+      	//console.log("beginning of outline eval X: " + x + " Y: " + y + 
+      	//	" is r: " + r + " g: " + g + " b: " + b);
+      	// todo: rely only on alpha channel, and create outline only images for each page				
+				if (r + g + b > 0){
+					tmp_ctx.fillRect( x, y, 1, 1 );
+				} else{
+					// break this loop, we're at the end
+					if (x == curX){
+						// done, found the outline
+						y = endY;
+						break;
+					}else{
+						// found outline on right, go to the next line
+						x = 0;
+						break;					
+					}					
+				} 
+      }	// for x
+    } // for y
+
+    // bucketfill from cursor to top right corner
+    for(var y = curY; y > 0; y--) {
+      for(var x = curX; x > 0; x--) {
+			 	var pixelPos = (y * imageWidth + x) * 4,
+							r = outlineLayerData.data[pixelPos],
+							g = outlineLayerData.data[pixelPos + 1],
+							b = outlineLayerData.data[pixelPos + 2],
+							a = outlineLayerData.data[pixelPos + 3];     	
+
+      	//console.log("beginning of outline eval X: " + x + " Y: " + y + 
+      	//	" is r: " + r + " g: " + g + " b: " + b);
+      	// todo: rely only on alpha channel, and create outline only images for each page				
+				if (r + g + b > 0){
+					tmp_ctx.fillRect( x, y, 1, 1 );
+				} else{
+					// break this loop, we're at the end
+					if (x == curX){
+						// done, found the outline
+						y = 0;
+						break;
+					}else{
+						// found outline on right, go to the next line
+						x = 0;
+						break;					
+					}					
+				} 
+      }	// for x
+    } // for y      
+
 	};
 	
 	var onPaint = function(startX, startY)  {
