@@ -94,6 +94,17 @@ function color_change(index){
 		mouse.x = typeof e.offsetX !== 'undefined' ? e.offsetX : e.layerX;
 		mouse.y = typeof e.offsetY !== 'undefined' ? e.offsetY : e.layerY;
 	}, false);
+
+	// add touch listeners
+	tmp_canvas.addEventListener('touchmove', function(e) {
+		mouse.x = typeof e.offsetX !== 'undefined' ? e.offsetX : e.layerX;
+		mouse.y = typeof e.offsetY !== 'undefined' ? e.offsetY : e.layerY;
+	}, false);
+	
+	canvas.addEventListener('touchmove', function(e) {
+		mouse.x = typeof e.offsetX !== 'undefined' ? e.offsetX : e.layerX;
+		mouse.y = typeof e.offsetY !== 'undefined' ? e.offsetY : e.layerY;
+	}, false);	
 	
 	
 	/* Drawing on Paint App */

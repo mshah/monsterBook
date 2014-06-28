@@ -1,0 +1,115 @@
+<html>
+    <style type="text/css">
+#sketch {
+
+	background-repeat: no-repeat;
+	border: 2px solid gray;
+	height: 100%;
+	position: relative;
+	width: 1110px;
+	height: 600px;
+}
+
+#tmp_canvas {
+	position: absolute;
+	left: 0px; right: 0;
+	bottom: 0; top: 0;
+	cursor: crosshair;
+}
+
+</style>
+<form>
+</form>
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>What to do about monsters under your bed</title>
+    <style type="text/css"><!--
+      #container { position: relative; }
+      #imageView { border: 1px solid #000; }
+      #imageTemp { position: absolute; top: 1px; left: 1px; }
+    --></style>
+	<style type="text/css" href="stylesheet.css"></style>	
+  </head>
+  <body>
+				<table border="1">
+					<col width="90"><col width="90"><col width="90"><col width="90"><col width="90"><col width="90"><col width="90"><col width="90"><col width="90"><col width="90"><col width="90"><col width="90">
+					<tbody>				
+						<tr>
+						  <td><button id="brush"><img id="colorbrush" height="70px" width="70px" src="./images/paintbrush_000000.png"/></button>
+						  </td>
+												  
+							<td height="80" onclick="color_change(0)" bgcolor=#000000 /><td height="80" onclick="color_change(1)" bgcolor=#7F7F7F />
+							<td height="80"  onclick="color_change(2)" bgcolor=#880015 /><td height="80"  onclick="color_change(3)" bgcolor=#DF013A />
+							<td height="80"  onclick="color_change(4)" bgcolor=#FF4000 /><td height="80"  onclick="color_change(5)" bgcolor=#FFFF00 />
+							<td height="80"  onclick="color_change(6)" bgcolor=#04B431 /><td height="80"  onclick="color_change(7)" bgcolor=#0000FF />
+							<td height="80"  onclick="color_change(8)" bgcolor=#5F04B4 /><td height="80"  onclick="color_change(9)" bgcolor=#8904B1 />	
+							<td height="80"> 
+							 <label>size: </label>
+							  <select id="size">
+								<option value="2">2</option>
+								<option value="4">4</option>
+								<option value="8">8</option>
+								<option value="16">16</option>			
+								</select>
+								<label>color: </label>
+						  <select id="color">
+							<option value="color1">000000</option>
+							<option value="color2">7F7F7F</option>
+							<option value="color3">880015</option>
+							<option value="color4">DF013A</option>	
+							<option value="color5">FF4000</option>	
+							<option value="color6">FFFF00</option>	
+							<option value="color7">04B431</option>	
+							<option value="color8">0000FF</option>	
+							<option value="color9">5F04B4</option>
+							<option value="color10">8904B1</option>	
+							<option value="color11">FFFFFF</option>	
+							<option value="color12">C3C3C3</option>
+							<option value="color13">B45F04</option>	
+							<option value="color14">F781BE</option>	
+							<option value="color15">FF8000</option>		
+							<option value="color16">BFFF00</option>	
+							<option value="color17">04B486</option>	
+							<option value="color18">2ECCFA</option>	
+							<option value="color19">DF01D7</option>	
+							<option value="color20">FF00BF</option>			
+							</select>								
+							</td>		
+						</tr>
+						<tr>
+							<td><button id="eraser"><img id="eraser_img" height="70px" width="70px" src="./images/eraser.png"/></button></td>	
+							<td height="80" onclick="color_change(10)" bgcolor=#FFFFFF /><td height="80"  onclick="color_change(11)" bgcolor=#C3C3C3 />						
+							<td height="80"  onclick="color_change(12)" bgcolor=#B45F04 /><td height="80"  onclick="color_change(13)" bgcolor=#F781BE />
+							<td height="80"  onclick="color_change(14)" bgcolor=#FF8000 /><td height="80"  onclick="color_change(15)" bgcolor=#BFFF00 />
+							<td height="80"  onclick="color_change(16)" bgcolor=#04B486 /><td height="80"  onclick="color_change(17)" bgcolor=#2ECCFA />
+							<td height="80"  onclick="color_change(18)" bgcolor=#DF01D7 /><td height="80"  onclick="color_change(19)" bgcolor=#FF00BF />
+							<td height="80"> 
+								<button id="reset"><img id="colorbrush" height="70px" width="70px" src="./images/reset.png"/></button></td>
+							</td>								
+						</tr>						
+					</tbody>
+				</table>	
+		<button id="prevpage"><img id="prevbutton" height="70px" width="70px" src="./images/prev.png"/></button>
+		<button id="nextpage"><img id="nextbutton" height="70px" width="70px" src="./images/next.png"/></button>	  
+		<button id="bucket"><img id="colorbucket" height="70px" width="70px" src="./images/paintbucket_000000.png"/></button>	 
+	<div id="sketch">
+		<img id="theImageToWorkWith" src="./pages/coverpage.png" style="display: none" />
+		<canvas id="paint"  width="1110" height="600">
+			<p>Unfortunately, your browser is currently unsupported by our web 
+			application.  We are sorry for the inconvenience. Please use one of the 
+			supported browsers listed below, or draw the image you want using an 
+			offline tool.</p>
+			<p>Supported browsers: <a href="http://www.opera.com">Opera</a>, <a 
+			  href="http://www.mozilla.com">Firefox</a>, <a 
+			  href="http://www.apple.com/safari">Safari</a>, and <a 
+			  href="http://www.konqueror.org">Konqueror</a>.</p>
+		  </canvas>	
+		
+    </div>  
+	<script type="text/javascript" src="jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="example_touch.js"></script>
+  </body>
+</html>
